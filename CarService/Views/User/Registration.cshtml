@@ -1,0 +1,57 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html>
+<head>
+    <title>stylish Sign in and Sign up Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <!--online_fonts-->
+    <link href="//fonts.googleapis.com/css?family=Sansita:400,400i,700,700i,800,800i,900,900i&amp;subset=latin-ext" rel="stylesheet">
+    <link href="//fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet">
+    <!--//online_fonts-->
+    <link rel="stylesheet" href="~/css/bootstrap.css">
+    <!-- Bootstrap-Core-CSS -->
+    <link href="~/css/JiSlider.css" rel="stylesheet">
+    <!-- //banner-slider -->
+    <link rel="stylesheet" href="~/css/smoothbox.css" type='text/css' media="all" />
+    <!-- gallery lightbox -->
+    <link rel="stylesheet" href="~/css/style1.css" type="text/css" media="all" />
+    <!-- Style-CSS -->
+    <link rel="stylesheet" href="~/css/fontawesome-all.css">
+</head>
+<body>
+    <div class="form-w3ls">
+        <div id="signup-agile">
+            <p align="center" class="signinP">Регистрация</p>
+            <form asp-action="Registration" asp-controller="User" asp-anti-forgery="true" method="post">
+
+                <input id="name" type="text" name="name" placeholder="Имя" >
+                <input id="surname" type="text" name="surname" placeholder="Фамилия" >
+                <input id="patronymic" type="text" name="patronymic" placeholder="Отчество" >
+                <input type="text" id="phone" name="phone" placeholder="Телефон">
+                <input id="email" type="email" name="email" placeholder="Email" >
+                <input id="password" type="password" name="password" placeholder="Пароль">
+                <input id="confirmPassword" type="password" name="confirmPassword" placeholder="Повторите пароль">
+                @Html.ActionLink("Забыли пароль?", "ForgotPassword", "User")<br /><br />
+                @Html.ActionLink("Есть аккаунт?", "Login", "User")<br />
+                <input id="reg" disabled type="submit" class="register" value="Зарегистрироваться">
+            </form>
+        </div>
+    </div> <!-- /form -->
+
+    <p class="copyright">&copy; 2018 </p>
+    <!-- js files -->
+    <script src='~/js/jquery-2.2.3.min.js'></script>
+    <script src="~/js/index.js"></script>
+    <script src="~/js/jquery.maskedinput.js"></script>
+    <script src="~/js/registerValidation.js"></script>
+    <script src="~/js/notify.min.js"></script>
+    <!-- /js files -->
+    <script>
+        $(function () {
+            $("#phone").mask("+375(99) 999-99-99");
+        });
+    </script>
+</body>
+</html>

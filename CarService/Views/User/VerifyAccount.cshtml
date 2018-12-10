@@ -1,0 +1,31 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>VerifyAccount</title>
+</head>
+<body>
+    <h2>
+        Подтверждение учетной записи
+    </h2>
+
+    @if (Convert.ToBoolean(ViewBag.Status))
+    {
+        <div class="alert alert-success">
+            <strong>Успешно!</strong>
+            Ваш аккаунт был успешно активирован. Нажмите чтобы войти @Html.ActionLink("Login", "Login", "User")
+        </div>
+
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <strong>Ошибка!</strong>@ViewBag.Message
+        </div>
+
+    }
+</body>
+</html>
