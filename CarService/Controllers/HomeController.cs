@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using CarService.Models;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CarService.Controllers
 {
@@ -13,6 +14,7 @@ namespace CarService.Controllers
         {
             db = context;
         }
+
         [HttpGet]
         public IActionResult Index()
 
@@ -29,23 +31,25 @@ namespace CarService.Controllers
             try
             {
                 clients = JsonConvert.DeserializeObject<Clients>(jClient);
+                clients.Date = DateTime.Now;
                 db.Clients.Add(clients);
                 db.SaveChanges();
             }
             catch
             {
                 ViewBag.Message = "Заявка не была отправлена";
-
             }
 
-            return View("Index");
+            return Ok();
         }
+
         [HttpPost]
         public IActionResult Registration()
         {
             return Redirect("/User/Login");
         }
 
+        [Authorize(Roles = "user")]
         [HttpPost]
         public IActionResult CommentAdd(string jComment)
         {

@@ -11,6 +11,7 @@ namespace CarService.Models
         {
             Comments = new HashSet<Comments>();
             Orders = new HashSet<Orders>();
+            Records = new HashSet<Records>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -39,10 +40,12 @@ namespace CarService.Models
         public string Password { get; set; }
         public bool Verified { get; set; }
         public Guid ActivationCode { get; set; }
+        public int? IdRole { get; set; }
         public string ResetPasswordCode { get; set; }
 
-        public BonusCard IdCardNavigation { get; set; }
+        public Roles Roles { get; set; }
         public ICollection<Comments> Comments { get; set; }
         public ICollection<Orders> Orders { get; set; }
+        public ICollection<Records> Records { get; set; }
     }
 }

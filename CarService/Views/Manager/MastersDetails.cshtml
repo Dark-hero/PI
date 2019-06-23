@@ -1,0 +1,187 @@
+﻿@model CarService.Models.Masters
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Clients</title>
+</head>
+<body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap.min.css" />
+    <script src="~/js/jquery-2.2.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="~/css/StyleManagerClients.css" />
+    <div id="wrapper">
+        <div class="overlay"></div>
+
+        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+            <ul class="nav sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Меню
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Clients">Заявки</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Record">Записи</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Masters">Мастера</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Parts">З\Ч в наличии</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="TypeOfWorks">Типы работ</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Statistic">Статистика</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Orders">Заказы</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div id="page-content-wrapper">
+            <button type="button" class="hamburger is-closed" data-toggle="offcanvas">
+                <span class="hamb-top"></span>
+                <span class="hamb-middle"></span>
+                <span class="hamb-bottom"></span>
+            </button>
+            <div class="container">
+
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading main-color-bg">
+                            <h3 class="panel-title">Информация о мастере</h3>
+                        </div>
+                        <div class="panel-body">
+                            <dl class="dl-horizontal">
+
+                                <dt>
+                                    Имя
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.Name)
+                                </dd>
+                                <dt>
+                                    Специальность
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.Specialty)
+                                </dd>
+                                <dt>
+                                    Фамилия
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.Surname)
+                                </dd>
+                                <dt>
+                                    Отчество
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.Patronymic)
+                                </dd>
+                                <dt>
+                                   Идентификационный номер паспорта
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.PassportId)
+                                </dd>
+                                <dt>
+                                    День рождения
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.Birthday)
+                                </dd>
+                                <dt>
+                                    Почтовый индекс
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.Postcode)
+                                </dd>
+                                <dt>
+                                    Город
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.City)
+                                </dd>
+                                <dt>
+                                    Улица
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.Street)
+                                </dd>
+                                <dt>
+                                    Дом
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.NumberHouse)
+                                </dd>
+                                <dt>
+                                    Квартира
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.NumberFlat)
+                                </dd>
+                                <dt>
+                                   Телефон
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.Phone)
+                                </dd>
+                                <dt>
+                                    Дата зачисления на работу
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.DateOfEmployment)
+                                </dd>
+                                <dt>
+                                    Работает?
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.IsWork)
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var trigger = $('.hamburger'),
+                overlay = $('.overlay'),
+                isClosed = false;
+
+            trigger.click(function () {
+                hamburger_cross();
+            });
+
+            function hamburger_cross() {
+
+                if (isClosed == true) {
+                    overlay.hide();
+                    trigger.removeClass('is-open');
+                    trigger.addClass('is-closed');
+                    isClosed = false;
+                } else {
+                    overlay.show();
+                    trigger.removeClass('is-closed');
+                    trigger.addClass('is-open');
+                    isClosed = true;
+                }
+            }
+
+            $('[data-toggle="offcanvas"]').click(function () {
+                $('#wrapper').toggleClass('toggled');
+            });
+        });
+    </script>
+</body>
+</html>

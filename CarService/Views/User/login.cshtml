@@ -7,20 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
-    <!--online_fonts-->
     <link href="//fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;subset=latin-ext"
           rel="stylesheet">
     <link href="//fonts.googleapis.com/css?family=Dr+Sugiyama&amp;subset=latin-ext" rel="stylesheet">
-    <!--//online_fonts-->
     <link rel="stylesheet" href="~/css/bootstrap.css">
-    <!-- Bootstrap-Core-CSS -->
     <link href="~/css/JiSlider.css" rel="stylesheet">
-    <!-- //banner-slider -->
     <link rel="stylesheet" href="~/css/smoothbox.css" type='text/css' media="all" />
-    <!-- gallery lightbox -->
     <link rel="stylesheet" href="~/css/style1.css" type="text/css" media="all" />
 
-    <!-- Style-CSS -->
     <link rel="stylesheet" href="~/css/fontawesome-all.css">
 </head>
 <body>
@@ -33,18 +27,16 @@
                     <input type="password" id="password" name="password" placeholder="Пароль" >
                     <br /><br />
                     @Html.ActionLink("Забыли пароль?", "ForgotPassword", "User")<br /><br />
-                    @Html.ActionLink("Регистрация","Registration","User")<br />
+                    @Html.ActionLink("Регистрация","Registration","User")<br /><br/>
                     @ViewBag.Message
                     <input id="sign" type="submit" class="sign-in" disabled value="Войти">
                 </form>
         </div>
-    </div> <!-- /form -->
-    <p class="copyright">&copy; 2018 </p>
-    <!-- js files -->
+    </div> 
+    <p class="copyright">&copy; 2019 </p>
     <script src='~/js/jquery-2.2.3.min.js'></script>
     <script src="~/js/index.js"></script>
     <script src="~/js/notify.min.js"></script>
     <script src="~/js/loginValidation.js"></script>
-    <!-- /js files -->
 </body>
 </html>

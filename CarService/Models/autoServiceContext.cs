@@ -16,16 +16,17 @@ namespace CarService.Models
         }
 
         public virtual DbSet<Account> Account { get; set; }
-        public virtual DbSet<ArtikulParts> ArtikulParts { get; set; }
         public virtual DbSet<Auto> Auto { get; set; }
-        public virtual DbSet<BonusCard> BonusCard { get; set; }
+        public virtual DbSet<AutoToPart> AutoToPart { get; set; }
         public virtual DbSet<Clients> Clients { get; set; }
         public virtual DbSet<Comments> Comments { get; set; }
-        public virtual DbSet<Equipment> Equipment { get; set; }
         public virtual DbSet<Masters> Masters { get; set; }
-        public virtual DbSet<OrderingServices> OrderingServices { get; set; }
         public virtual DbSet<Orders> Orders { get; set; }
         public virtual DbSet<Parts> Parts { get; set; }
+        public virtual DbSet<Records> Records { get; set; }
+        public virtual DbSet<Roles> Roles { get; set; }
+        public virtual DbSet<OrdersToParts> OrdersToParts { get; set; }
+        public virtual DbSet<OrdersToWorks> OrdersToWorks { get; set; }
         public virtual DbSet<TypeOfWorks> TypeOfWorks { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -43,18 +44,12 @@ namespace CarService.Models
             {
                 entity.HasKey(e => e.IdUser);
 
-                entity.ToTable("account");
-
-                entity.HasIndex(e => e.Email)
-                    .HasName("UQ__account__AB6E616426561D1E")
-                    .IsUnique();
-
                 entity.Property(e => e.IdUser).HasColumnName("id_user");
 
-                entity.Property(e => e.ActivationCode).HasColumnName("activation_code");
+                entity.Property(e => e.ActivationCode).HasColumnName("activationCode");
 
                 entity.Property(e => e.DateOfRegistration)
-                    .HasColumnName("date_of_registration")
+                    .HasColumnName("dateOfRegistration")
                     .HasColumnType("date");
 
                 entity.Property(e => e.Email)
@@ -63,6 +58,8 @@ namespace CarService.Models
                     .HasMaxLength(70);
 
                 entity.Property(e => e.IdCard).HasColumnName("id_card");
+
+                entity.Property(e => e.IdRole).HasColumnName("id_role");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -82,9 +79,7 @@ namespace CarService.Models
                     .HasColumnName("phone")
                     .HasMaxLength(35);
 
-                entity.Property(e => e.ResetPasswordCode)
-                    .HasColumnName("reset_password_code")
-                    .HasMaxLength(100);
+                entity.Property(e => e.ResetPasswordCode).HasColumnName("resetPasswordCode");
 
                 entity.Property(e => e.Surname)
                     .HasColumnName("surname")
@@ -92,32 +87,11 @@ namespace CarService.Models
 
                 entity.Property(e => e.Verified).HasColumnName("verified");
 
-                entity.HasOne(d => d.IdCardNavigation)
+                entity.HasOne(d => d.Roles)
                     .WithMany(p => p.Account)
-                    .HasForeignKey(d => d.IdCard)
-                    .HasConstraintName("FK_account_bonusCard");
-            });
-
-            modelBuilder.Entity<ArtikulParts>(entity =>
-            {
-                entity.HasKey(e => e.Artikul);
-
-                entity.ToTable("artikulParts");
-
-                entity.Property(e => e.Artikul)
-                    .HasColumnName("artikul")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.VinCode)
-                    .IsRequired()
-                    .HasColumnName("vinCode")
-                    .HasMaxLength(15);
-
-                entity.HasOne(d => d.VinCodeNavigation)
-                    .WithMany(p => p.ArtikulParts)
-                    .HasForeignKey(d => d.VinCode)
+                    .HasForeignKey(d => d.IdRole)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_artikulParts_auto");
+                    .HasConstraintName("FK_Account_Roles");
             });
 
             modelBuilder.Entity<Auto>(entity =>
@@ -128,7 +102,7 @@ namespace CarService.Models
 
                 entity.Property(e => e.VinCode)
                     .HasColumnName("vinCode")
-                    .HasMaxLength(15)
+                    .HasMaxLength(20)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.EngineСapacity).HasColumnName("engineСapacity");
@@ -148,33 +122,39 @@ namespace CarService.Models
                 entity.Property(e => e.RegisterSign)
                     .IsRequired()
                     .HasColumnName("registerSign")
-                    .HasMaxLength(7);
+                    .HasMaxLength(10);
 
                 entity.Property(e => e.Year).HasColumnName("year");
             });
 
-            modelBuilder.Entity<BonusCard>(entity =>
+            modelBuilder.Entity<AutoToPart>(entity =>
             {
-                entity.HasKey(e => e.IdCard);
+                entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.ToTable("bonusCard");
+                entity.Property(e => e.Artikul).HasColumnName("artikul");
 
-                entity.Property(e => e.IdCard)
-                    .HasColumnName("id_card")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.VinCode)
+                    .IsRequired()
+                    .HasColumnName("vinCode")
+                    .HasMaxLength(20);
 
-                entity.Property(e => e.DateOfPurchase)
-                    .HasColumnName("date_of_purchase")
-                    .HasColumnType("date");
+                entity.HasOne(d => d.ArtikulNavigation)
+                    .WithMany(p => p.AutoToPart)
+                    .HasForeignKey(d => d.Artikul)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AutoToPart_Parts");
 
-                entity.Property(e => e.Discount).HasColumnName("discount");
+                entity.HasOne(d => d.VinCodeNavigation)
+                    .WithMany(p => p.AutoToPart)
+                    .HasForeignKey(d => d.VinCode)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AutoToPart_auto");
             });
+
 
             modelBuilder.Entity<Clients>(entity =>
             {
                 entity.HasKey(e => e.IdClient);
-
-                entity.ToTable("clients");
 
                 entity.Property(e => e.IdClient).HasColumnName("idClient");
 
@@ -235,35 +215,7 @@ namespace CarService.Models
                     .WithMany(p => p.Comments)
                     .HasForeignKey(d => d.IdUser)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_comments_account");
-            });
-
-            modelBuilder.Entity<Equipment>(entity =>
-            {
-                entity.HasKey(e => e.IdEquipment);
-
-                entity.ToTable("equipment");
-
-                entity.Property(e => e.IdEquipment)
-                    .HasColumnName("id_equipment")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.CoefficientOfLoading).HasColumnName("coefficient_of_loading");
-
-                entity.Property(e => e.Cost).HasColumnName("cost");
-
-                entity.Property(e => e.DatуOfManufacture)
-                    .HasColumnName("datу_of_manufacture")
-                    .HasColumnType("date");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasColumnName("name")
-                    .HasMaxLength(100);
-
-                entity.Property(e => e.Warranty)
-                    .HasColumnName("warranty")
-                    .HasColumnType("date");
+                    .HasConstraintName("FK_comments_Account");
             });
 
             modelBuilder.Entity<Masters>(entity =>
@@ -272,9 +224,7 @@ namespace CarService.Models
 
                 entity.ToTable("masters");
 
-                entity.Property(e => e.IdMaster)
-                    .HasColumnName("id_master")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.IdMaster).HasColumnName("id_master");
 
                 entity.Property(e => e.Birthday)
                     .HasColumnName("birthday")
@@ -309,6 +259,9 @@ namespace CarService.Models
                     .HasColumnName("passport_id")
                     .HasMaxLength(50);
 
+                entity.Property(e => e.IsWork).HasColumnName("isWork");
+
+
                 entity.Property(e => e.Patronymic)
                     .HasColumnName("patronymic")
                     .HasMaxLength(50);
@@ -339,74 +292,52 @@ namespace CarService.Models
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<OrderingServices>(entity =>
-            {
-                entity.ToTable("orderingServices");
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.Artikul).HasColumnName("artikul");
-
-                entity.Property(e => e.IdMaster).HasColumnName("id_master");
-
-                entity.Property(e => e.JobCode).HasColumnName("jobCode");
-
-                entity.HasOne(d => d.ArtikulNavigation)
-                    .WithMany(p => p.OrderingServices)
-                    .HasForeignKey(d => d.Artikul)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_orderingServices_Parts");
-
-                entity.HasOne(d => d.IdMasterNavigation)
-                    .WithMany(p => p.OrderingServices)
-                    .HasForeignKey(d => d.IdMaster)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_orderingServices_masters");
-
-                entity.HasOne(d => d.JobCodeNavigation)
-                    .WithMany(p => p.OrderingServices)
-                    .HasForeignKey(d => d.JobCode)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_orderingServices_type_of_works");
-            });
+            
 
             modelBuilder.Entity<Orders>(entity =>
             {
                 entity.ToTable("orders");
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .HasMaxLength(10)
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.AdmissionDate)
-                    .HasColumnName("admission_date")
+                entity.Property(e => e.EndDate)
+                    .HasColumnName("end_date")
                     .HasColumnType("date");
 
                 entity.Property(e => e.IdClient).HasColumnName("idClient");
+
+                entity.Property(e => e.IdMaster).HasColumnName("id_master");
 
                 entity.Property(e => e.IdUser).HasColumnName("id_user");
 
                 entity.Property(e => e.OrderCost).HasColumnName("order_cost");
 
+                entity.Property(e => e.StartDate)
+                    .HasColumnName("start_date")
+                    .HasColumnType("date");
+
                 entity.Property(e => e.VinCode)
                     .IsRequired()
                     .HasColumnName("vinCode")
-                    .HasMaxLength(15);
+                    .HasMaxLength(20);
 
                 entity.HasOne(d => d.IdClientNavigation)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.IdClient)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_orders_clients");
+                    .HasConstraintName("FK_orders_Clients");
+
+                entity.HasOne(d => d.IdMasterNavigation)
+                    .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.IdMaster)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_orders_masters");
 
                 entity.HasOne(d => d.IdUserNavigation)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.IdUser)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_orders_account");
+                    .HasConstraintName("FK_orders_Account");
 
                 entity.HasOne(d => d.VinCodeNavigation)
                     .WithMany(p => p.Orders)
@@ -433,12 +364,97 @@ namespace CarService.Models
                     .IsRequired()
                     .HasColumnName("name")
                     .HasMaxLength(100);
+                entity.Property(e => e.Quantity).HasColumnName("quantity");
+            });
 
-                entity.HasOne(d => d.ArtikulNavigation)
-                    .WithOne(p => p.Parts)
-                    .HasForeignKey<Parts>(d => d.Artikul)
+            modelBuilder.Entity<OrdersToParts>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Artikul).HasColumnName("artikul");
+
+                entity.Property(e => e.IdOrder).HasColumnName("id_order");
+
+                entity.HasOne(d => d.OrdersNavigation)
+                    .WithMany(p => p.OrdersToParts)
+                    .HasForeignKey(d => d.IdOrder)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Parts_artikulParts");
+                    .HasConstraintName("FK_OrdersToParts_Orders");
+
+                entity.HasOne(d => d.PartsNavigation)
+                    .WithMany(p => p.OrdersToParts)
+                    .HasForeignKey(d => d.Artikul)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrdersToParts_Parts");
+            });
+
+            modelBuilder.Entity<OrdersToWorks>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.JobCode).HasColumnName("jobCode");
+
+                entity.Property(e => e.IdOrder).HasColumnName("id_order");
+
+                entity.HasOne(d => d.OrdersNavigation)
+                    .WithMany(p => p.OrdersToWorks)
+                    .HasForeignKey(d => d.IdOrder)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrdersToWorks_Orders");
+
+                entity.HasOne(d => d.TypeOfWorksNavigation)
+                    .WithMany(p => p.OrdersToWorks)
+                    .HasForeignKey(d => d.JobCode)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrdersToWorks_type_of_works");
+            });
+
+            modelBuilder.Entity<Records>(entity =>
+            {
+                entity.HasKey(e => e.IdRecod);
+
+                entity.Property(e => e.IdRecod).HasColumnName("idRecod");
+
+                entity.Property(e => e.Description).HasMaxLength(300);
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.IdUser).HasColumnName("id_user");
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Subject)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.ThemeColor).HasMaxLength(10);
+
+                entity.HasOne(d => d.IdClientNavigation)
+                    .WithMany(p => p.Records)
+                    .HasForeignKey(d => d.IdClient)
+                    .HasConstraintName("FK_Records_Clients");
+
+                entity.HasOne(d => d.IdUserNavigation)
+                    .WithMany(p => p.Records)
+                    .HasForeignKey(d => d.IdUser)
+                    .HasConstraintName("FK_Records_Account");
+            });
+
+            modelBuilder.Entity<Roles>(entity =>
+            {
+                entity.HasKey(e => e.IdRole);
+
+                entity.Property(e => e.IdRole)
+                    .HasColumnName("id_role")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Role)
+                    .IsRequired()
+                    .HasColumnName("role")
+                    .HasMaxLength(20);
             });
 
             modelBuilder.Entity<TypeOfWorks>(entity =>
@@ -447,26 +463,14 @@ namespace CarService.Models
 
                 entity.ToTable("type_of_works");
 
-                entity.Property(e => e.JobCode)
-                    .HasColumnName("jobCode")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.JobCode).HasColumnName("jobCode");
 
-                entity.Property(e => e.Deadline).HasColumnName("deadline");
-
-                entity.Property(e => e.HourСost).HasColumnName("hourСost");
-
-                entity.Property(e => e.IdEquipment).HasColumnName("id_equipment");
+                entity.Property(e => e.Cost).HasColumnName("cost");
 
                 entity.Property(e => e.TypeOfWork)
                     .IsRequired()
                     .HasColumnName("type_of_work")
                     .HasMaxLength(200);
-
-                entity.HasOne(d => d.IdEquipmentNavigation)
-                    .WithMany(p => p.TypeOfWorks)
-                    .HasForeignKey(d => d.IdEquipment)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_type_of_works_equipment");
             });
         }
     }

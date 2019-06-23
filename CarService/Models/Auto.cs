@@ -7,7 +7,7 @@ namespace CarService.Models
     {
         public Auto()
         {
-            ArtikulParts = new HashSet<ArtikulParts>();
+            AutoToPart = new HashSet<AutoToPart>();
             Orders = new HashSet<Orders>();
         }
 
@@ -19,7 +19,9 @@ namespace CarService.Models
         public int Year { get; set; }
         public double EngineСapacity { get; set; }
 
-        public ICollection<ArtikulParts> ArtikulParts { get; set; }
+        public ICollection<AutoToPart> AutoToPart { get; set; }
         public ICollection<Orders> Orders { get; set; }
+
+        
     }
 }

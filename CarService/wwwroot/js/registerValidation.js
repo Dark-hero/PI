@@ -14,7 +14,6 @@ var checkNull = function () {
 };
 
 $("#name").focusout(checkNull);
-//$("#Phone").focusout(checkNull);
 $("#email").focusout(checkNull);
 $("#password").focusout(checkNull);
 

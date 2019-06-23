@@ -7,14 +7,30 @@
         Email: $('#email').val(),
         Phone: $('#phone').val(),
         Problem: $('#problem').val(),
-        Date:new Date()
+        IsCancel: false,
+        IsRecord: false
     }
 
     $.ajax({
         url: '/Home/ClientForm',
         method: 'post',
-        data: { jClient: JSON.stringify(clJson) },
-        success: function () { alert("OK"); }
+        data: {
+            jClient: JSON.stringify(clJson)
+        },
+        success: function ()
+        {
+            alert("Ваша заявка была успешно отправлена!");
+            reset();
+        }
      
     })
+
+    function reset() {
+        $("#name").val('');
+        $("#surname").val('');
+        $("#patronimyc").val('');
+        $("#email").val('');
+        $("#phone").val('');
+        $("#problem").val('');
+    }
 })

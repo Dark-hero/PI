@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AutoMapper;
 using CarService.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -22,11 +21,12 @@ namespace CarService.Controllers
     [Controller]
     public class UserController : Controller
     {
-        private async Task Authenticate(string userName)
+        private async Task Authenticate(Account user)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, userName)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType,user.Roles?.Role )
             };
             ClaimsIdentity id = new ClaimsIdentity(claims,
                 "ApplicationCookie",
@@ -55,9 +55,7 @@ namespace CarService.Controllers
             {
                 bool Status = false;
                 string message = "";
-                //if (ModelState.IsValid)
-                //{
-                //  проверка почты
+
                 var IsExist = IsEmailExist(registration.Email);
                 if (IsExist)
                 {
@@ -65,10 +63,8 @@ namespace CarService.Controllers
                     return View(registration);
                 }
 
-                //gener active code 
                 registration.ActivationCode = Guid.NewGuid();
 
-                //хэширование
                 registration.Password = SimpleHash.ComputeHash(registration.Password);
 
                 registration.Verified = false;
@@ -80,13 +76,11 @@ namespace CarService.Controllers
                 {
                     ModelState.AddModelError("", "Такой пользователь уже есть");
                 }
+                registration.IdRole = 1;
 
-                //if (ModelState.IsValid)
-                //{
                 db.Account.Add(registration);
                 db.SaveChanges();
 
-                //email
                 SendVerificationLinkEmail(registration.Email, registration.ActivationCode.ToString());
                 message = "Ссылка на активацию аккаунта " +
                     " была отправлена на указанную почту: " + registration.Email;
@@ -94,12 +88,7 @@ namespace CarService.Controllers
 
                 ModelState.Clear();
                 ViewBag.Message = registration.Name + " " + " успешно зарегистрирован(a)";
-                //}
-                //}
-                //else
-                //{
-                //    message = " Зарегистироваться не удалось";
-                //}
+
                 ViewBag.Message = message;
                 ViewBag.Status = Status;
             }
@@ -125,7 +114,7 @@ namespace CarService.Controllers
 
             var fromEmail = new MailAddress("newsportalaspcore@gmail.com", "Гараж 24");
             var toEmail = new MailAddress(emailID);
-            var fromEmailPassword = "123456789QWERtyuiop";
+            var fromEmailPassword = "PASS";
 
             string subject = "";
             string body = "";
@@ -185,7 +174,7 @@ namespace CarService.Controllers
                 ViewBag.Message = "Ошибка запроса";
             }
             ViewBag.Status = Status;
-            return RedirectToAction("Login","User");
+            return RedirectToAction("Login", "User");
         }
 
         [HttpGet]
@@ -201,13 +190,26 @@ namespace CarService.Controllers
             if (login.Email != null && login.Password != null)
             {
                 login.Password = SimpleHash.ComputeHash(login.Password);
-                Account user = await db.Account.FirstOrDefaultAsync(u => u.Email == login.Email && u.Password == login.Password);
+                Account user = await db.Account.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == login.Email && u.Password == login.Password);
                 if (user != null)
                 {
                     if (user.Verified == true)
                     {
-                        await Authenticate(login.Email); // аутентификация
-                        return Redirect("/Account/Index");
+                        if (user.IdRole == 0)
+                        {
+                            await Authenticate(user);
+                            return Redirect("/Admin/Index");
+                        }
+                        else if(user.IdRole == 1)
+                        {
+                            await Authenticate(user);
+                            return Redirect("/Account/Index");
+                        }
+                        else
+                        {
+                            await Authenticate(user);
+                            return Redirect("/Manager/Clients");
+                        }
                     }
                     else
                     {
@@ -236,7 +238,6 @@ namespace CarService.Controllers
         public ActionResult ForgotPassword(Account model)
         {
             string message = "";
-            bool Status = false;
             var account = db.Account.Where(a => a.Email == model.Email).FirstOrDefault();
             if (account != null)
             {
@@ -255,6 +256,46 @@ namespace CarService.Controllers
             ViewBag.Message = message;
             return View();
         }
+
+        [HttpGet("{id}")]
+        public IActionResult ResetPassword(string id)
+        {
+            var user = db.Account.Where(u => u.ResetPasswordCode == id).FirstOrDefault();
+            if (user != null)
+            {
+                Account model = new Account();
+                model.ResetPasswordCode = id;
+                return View(model);
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResetPassword(Account account)
+        {
+            string message = "";
+            var userPass = db.Account.Where(u => u.ResetPasswordCode == account.ResetPasswordCode).FirstOrDefault();
+            if (userPass != null)
+            {
+                userPass.Password = SimpleHash.ComputeHash(account.Password);
+                userPass.ResetPasswordCode = "";
+                db.SaveChanges();
+                message = "Новый пароль успешно применен";
+
+            }
+            else
+            {
+                message = "Ошибка";
+                return View();
+            }
+            ViewBag.Message = message;
+            return RedirectToAction("Login");
+        }
+
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

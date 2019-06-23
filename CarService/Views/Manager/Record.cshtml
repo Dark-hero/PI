@@ -1,0 +1,187 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<CarService.Models.Clients>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Clients</title>
+</head>
+<body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap.min.css" />
+    <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
+    <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.css" rel="stylesheet" media="print" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <script src="~/js/jquery-2.2.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="~/css/StyleManagerClients.css" />
+    <script src="~/js/Record.js"></script>
+    <div id="wrapper">
+        <div class="overlay"></div>
+        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+            <ul class="nav sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Меню
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Clients">Заявки</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Record">Записи</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Masters">Мастера</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Parts">З\Ч в наличии</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="TypeOfWorks">Типы работ</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Statistic">Статистика</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="Orders">Заказы</a>
+                </li>
+                <li>
+                    <a asp-controller="Manager" asp-action="SendEmail">Рассылка</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div id="page-content-wrapper">
+            <button type="button" class="hamburger is-closed" data-toggle="offcanvas">
+                <span class="hamb-top"></span>
+                <span class="hamb-middle"></span>
+                <span class="hamb-bottom"></span>
+            </button>
+            <div class="container">
+
+
+                <div id="calender"></div>
+
+                <div id="myModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title"><span id="eventTitle"></span></h4>
+                            </div>
+                            <div class="modal-body">
+                                <button id="btnDelete" class="btn btn-default btn-sm pull-right">
+                                    <span class="glyphicon glyphicon-remove"></span> Удалить
+                                </button>
+                                <button id="btnEdit" class="btn btn-default btn-sm pull-right" style="margin-right:5px;">
+                                    <span class="glyphicon glyphicon-pencil"></span> Изменить
+                                </button>
+                                <p id="pDetails"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="myModalSave" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Сохранить</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form class="col-md-12 form-horizontal">
+                                    <input type="hidden" id="hdEventID" value="0" />
+                                    <div class="form-group">
+                                        <label>Заголовок</label>
+                                        <input type="text" id="txtSubject" class="form-control" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Начало</label>
+                                        <div class="input-group date" id="dtp1">
+                                            <input type="text" id="txtStart" class="form-control" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" id="chkIsFullDay" checked="checked" />  Целый день</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="divEndDate" style="display:none">
+                                        <label>Конец</label>
+                                        <div class="input-group date" id="dtp2">
+                                            <input type="text" id="txtEnd" class="form-control" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Описание</label>
+                                        <textarea id="txtDescription" rows="3" class="form-control"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Цвет задачи</label>
+                                        <select id="ddThemeColor" class="form-control">
+                                            <option value="">По умолчанию</option>
+                                            <option value="red">Красный</option>
+                                            <option value="blue">Синий</option>
+                                            <option value="black">Черный</option>
+                                            <option value="green">Зеленый</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" id="btnSave" class="btn btn-success">Сохранить</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        </div>
+        <script>
+            $(document).ready(function () {
+                var trigger = $('.hamburger'),
+                    overlay = $('.overlay'),
+                    isClosed = false;
+
+                trigger.click(function () {
+                    hamburger_cross();
+                });
+
+                function hamburger_cross() {
+
+                    if (isClosed == true) {
+                        overlay.hide();
+                        trigger.removeClass('is-open');
+                        trigger.addClass('is-closed');
+                        isClosed = false;
+                    } else {
+                        overlay.show();
+                        trigger.removeClass('is-closed');
+                        trigger.addClass('is-open');
+                        isClosed = true;
+                    }
+                }
+
+                $('[data-toggle="offcanvas"]').click(function () {
+                    $('#wrapper').toggleClass('toggled');
+                });
+            });
+        </script>
+</body>
+</html>

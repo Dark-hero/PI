@@ -40,6 +40,7 @@ namespace CarService
                 });
 
             services.AddMvc();
+            services.AddSignalR();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -51,6 +52,7 @@ namespace CarService
             services.AddSingleton(physicalProvider);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,7 +67,7 @@ namespace CarService
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

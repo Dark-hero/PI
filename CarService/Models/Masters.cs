@@ -7,7 +7,7 @@ namespace CarService.Models
     {
         public Masters()
         {
-            OrderingServices = new HashSet<OrderingServices>();
+            Orders = new HashSet<Orders>();
         }
 
         public int IdMaster { get; set; }
@@ -24,7 +24,8 @@ namespace CarService.Models
         public string NumberFlat { get; set; }
         public string Phone { get; set; }
         public DateTime DateOfEmployment { get; set; }
+        public bool IsWork { get; set; }
 
-        public ICollection<OrderingServices> OrderingServices { get; set; }
+        public ICollection<Orders> Orders { get; set; }
     }
 }

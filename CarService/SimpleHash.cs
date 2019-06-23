@@ -19,9 +19,6 @@ namespace CarService
                 // Initialize a random number generator.
                 RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
 
-                // Fill the salt with cryptographically strong byte values.
-              //  rng.GetNonZeroBytes(saltBytes);
-
             // Convert plain text into a byte array.
             byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
 
